@@ -1,4 +1,33 @@
-# v2.2.32 - TBD
+# v2.2.34 - TBD
+
+# v2.2.33.1 - 2022-05-30
+
+## Fixed
+
+- [#4796](https://github.com/hyperf/hyperf/pull/4796) Fixed id repeat when generate snowflake id caused by calling `init` more than once.
+
+# v2.2.33 - 2022-05-30
+
+## Fixed
+
+- [#4776](https://github.com/hyperf/hyperf/pull/4776) Fixed bug that graphql event collect failed.
+- [#4790](https://github.com/hyperf/hyperf/pull/4790) Fixed bug that rpn method `toRPNExpression` does not work in some cases.
+
+## Added
+
+- [#4763](https://github.com/hyperf/hyperf/pull/4763) Added validation rule `array:key1,key2` which make sure the array has no keys other than `key1` and `key2`.
+- [#4781](https://github.com/hyperf/hyperf/pull/4781) Added `close-pull-request.yml` to close pr for `read-only` repositories.
+
+# v2.2.32 - 2022-05-16
+
+## Fixed
+
+- [#4745](https://github.com/hyperf/hyperf/pull/4745) Fixed null pointer exception when using `Producer::close`.
+- [#4754](https://github.com/hyperf/hyperf/pull/4754) Fixed the bug that monolog does not work in `2.6.0` by configuring `conflict` with `monolog>=2.6.0`.
+
+## Optimized
+
+- [#4738](https://github.com/hyperf/hyperf/pull/4738) Configuring a default groupId when it is null when using `hyperf/kafka`.
 
 # v2.2.31.1 - 2022-04-18
 

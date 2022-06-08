@@ -11,37 +11,22 @@ declare(strict_types=1);
  */
 namespace Hyperf\Watcher\Driver;
 
+use Hyperf\Engine\Channel;
 use Hyperf\Utils\Str;
 use Hyperf\Watcher\Option;
-use Swoole\Coroutine\Channel;
 use Swoole\Coroutine\System;
 use Swoole\Timer;
 
 class FindDriver implements DriverInterface
 {
-    /**
-     * @var Option
-     */
-    protected $option;
+    protected bool $isDarwin = false;
 
-    /**
-     * @var bool
-     */
-    protected $isDarwin = false;
+    protected bool $isSupportFloatMinutes = true;
 
-    /**
-     * @var bool
-     */
-    protected $isSupportFloatMinutes = true;
+    protected int $startTime = 0;
 
-    /**
-     * @var int
-     */
-    protected $startTime;
-
-    public function __construct(Option $option)
+    public function __construct(protected Option $option)
     {
-        $this->option = $option;
         if (PHP_OS === 'Darwin') {
             $this->isDarwin = true;
         } else {
@@ -58,7 +43,7 @@ class FindDriver implements DriverInterface
                 throw new \InvalidArgumentException('find not exists.');
             }
             $ret = System::exec('find --help', true);
-            $this->isSupportFloatMinutes = (strpos($ret['output'] ?? '', 'BusyBox')) === false;
+            $this->isSupportFloatMinutes = ! str_contains($ret['output'] ?? '', 'BusyBox');
         }
     }
 
@@ -126,15 +111,11 @@ class FindDriver implements DriverInterface
     {
         $ext = $this->option->getExt();
 
-        $dirs = array_map(function ($dir) {
-            return BASE_PATH . '/' . $dir;
-        }, $this->option->getWatchDir());
+        $dirs = array_map(fn ($dir) => BASE_PATH . '/' . $dir, $this->option->getWatchDir());
 
         [$fileModifyTimes, $changedFilesInDirs] = $this->find($fileModifyTimes, $dirs, $minutes, $ext);
 
-        $files = array_map(function ($file) {
-            return BASE_PATH . '/' . $file;
-        }, $this->option->getWatchFile());
+        $files = array_map(fn ($file) => BASE_PATH . '/' . $file, $this->option->getWatchFile());
 
         [$fileModifyTimes, $changedFiles] = $this->find($fileModifyTimes, $files, $minutes);
 

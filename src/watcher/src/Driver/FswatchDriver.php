@@ -11,27 +11,18 @@ declare(strict_types=1);
  */
 namespace Hyperf\Watcher\Driver;
 
+use Hyperf\Engine\Channel;
 use Hyperf\Utils\Coroutine;
 use Hyperf\Utils\Str;
 use Hyperf\Watcher\Option;
-use Swoole\Coroutine\Channel;
 use Swoole\Coroutine\System;
 
 class FswatchDriver implements DriverInterface
 {
-    /**
-     * @var Option
-     */
-    protected $option;
+    protected bool $isDarwin;
 
-    /**
-     * @var bool
-     */
-    protected $isDarwin;
-
-    public function __construct(Option $option)
+    public function __construct(protected Option $option)
     {
-        $this->option = $option;
         $this->isDarwin = PHP_OS === 'Darwin';
         $ret = System::exec('which fswatch');
         if (empty($ret['output'])) {

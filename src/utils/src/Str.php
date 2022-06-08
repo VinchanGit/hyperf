@@ -179,14 +179,12 @@ class Str
     /**
      * Determine if a given string contains a given substring.
      *
-     * @param string $haystack
      * @param array|string $needles
-     * @return bool
      */
-    public static function contains($haystack, $needles)
+    public static function contains(string $haystack, $needles): bool
     {
         foreach ((array) $needles as $needle) {
-            if ($needle !== '' && mb_strpos($haystack, $needle) !== false) {
+            if ($needle !== '' && str_contains($haystack, (string) $needle)) {
                 return true;
             }
         }
@@ -215,14 +213,13 @@ class Str
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param string $haystack
      * @param array|string $needles
      * @return bool
      */
-    public static function endsWith($haystack, $needles)
+    public static function endsWith(string $haystack, $needles)
     {
         foreach ((array) $needles as $needle) {
-            if (substr($haystack, -strlen($needle)) === (string) $needle) {
+            if ($needle !== '' && str_ends_with($haystack, (string) $needle)) {
                 return true;
             }
         }
@@ -397,7 +394,7 @@ class Str
      */
     public static function padBoth($value, $length, $pad = ' ')
     {
-        return str_pad($value, $length, $pad, STR_PAD_BOTH);
+        return str_pad($value, strlen($value) - mb_strlen($value) + $length, $pad, STR_PAD_BOTH);
     }
 
     /**
@@ -410,7 +407,7 @@ class Str
      */
     public static function padLeft($value, $length, $pad = ' ')
     {
-        return str_pad($value, $length, $pad, STR_PAD_LEFT);
+        return str_pad($value, strlen($value) - mb_strlen($value) + $length, $pad, STR_PAD_LEFT);
     }
 
     /**
@@ -423,7 +420,7 @@ class Str
      */
     public static function padRight($value, $length, $pad = ' ')
     {
-        return str_pad($value, $length, $pad, STR_PAD_RIGHT);
+        return str_pad($value, strlen($value) - mb_strlen($value) + $length, $pad, STR_PAD_RIGHT);
     }
 
     /**
@@ -652,7 +649,7 @@ class Str
     public static function startsWith(string $haystack, $needles): bool
     {
         foreach ((array) $needles as $needle) {
-            if ($needle !== '' && substr($haystack, 0, strlen($needle)) === (string) $needle) {
+            if ($needle !== '' && str_starts_with($haystack, (string) $needle)) {
                 return true;
             }
         }

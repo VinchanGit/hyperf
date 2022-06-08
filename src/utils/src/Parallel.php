@@ -11,20 +11,17 @@ declare(strict_types=1);
  */
 namespace Hyperf\Utils;
 
+use Hyperf\Engine\Channel;
 use Hyperf\Utils\Exception\ParallelExecutionException;
-use Swoole\Coroutine\Channel;
 
 class Parallel
 {
     /**
      * @var callable[]
      */
-    private $callbacks = [];
+    private array $callbacks = [];
 
-    /**
-     * @var null|Channel
-     */
-    private $concurrentChannel;
+    private ?Channel $concurrentChannel = null;
 
     /**
      * @param int $concurrent if $concurrent is equal to 0, that means unlimit

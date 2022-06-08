@@ -14,6 +14,7 @@ namespace Hyperf\Watcher;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\AnnotationReader;
 use Hyperf\Di\ClassLoader;
+use Hyperf\Engine\Channel;
 use Hyperf\Utils\Codec\Json;
 use Hyperf\Utils\Coroutine;
 use Hyperf\Utils\Exception\InvalidArgumentException;
@@ -22,80 +23,34 @@ use Hyperf\Utils\Filesystem\Filesystem;
 use Hyperf\Watcher\Driver\DriverInterface;
 use PhpParser\PrettyPrinter\Standard;
 use Psr\Container\ContainerInterface;
-use Swoole\Coroutine\Channel;
 use Swoole\Coroutine\System;
 use Swoole\Process;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Watcher
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected DriverInterface $driver;
 
-    /**
-     * @var Option
-     */
-    protected $option;
+    protected Filesystem $filesystem;
 
-    /**
-     * @var DriverInterface
-     */
-    protected $driver;
+    protected ClassLoader $loader;
 
-    /**
-     * @var Filesystem
-     */
-    protected $filesystem;
+    protected array $autoload;
 
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
+    protected AnnotationReader $reader;
 
-    /**
-     * @var ClassLoader
-     */
-    protected $loader;
+    protected ConfigInterface $config;
 
-    /**
-     * @var array
-     */
-    protected $autoload;
+    protected Standard $printer;
 
-    /**
-     * @var AnnotationReader
-     */
-    protected $reader;
+    protected Channel $channel;
 
-    /**
-     * @var ConfigInterface
-     */
-    protected $config;
+    protected string $path = BASE_PATH . '/runtime/container/collectors.cache';
 
-    /**
-     * @var Standard
-     */
-    protected $printer;
-
-    /**
-     * @var Channel
-     */
-    protected $channel;
-
-    /**
-     * @var string
-     */
-    protected $path = BASE_PATH . '/runtime/container/collectors.cache';
-
-    public function __construct(ContainerInterface $container, Option $option, OutputInterface $output)
+    public function __construct(protected ContainerInterface $container, protected Option $option, protected OutputInterface $output)
     {
-        $this->container = $container;
-        $this->option = $option;
         $this->driver = $this->getDriver();
         $this->filesystem = new Filesystem();
-        $this->output = $output;
         $json = Json::decode($this->filesystem->get(BASE_PATH . '/composer.json'));
         $this->autoload = array_flip($json['autoload']['psr-4'] ?? []);
         $this->reader = new AnnotationReader();
@@ -162,7 +117,7 @@ class Watcher
                 if (Process::kill((int) $pid, 0)) {
                     Process::kill((int) $pid, SIGTERM);
                 }
-            } catch (\Throwable $exception) {
+            } catch (\Throwable) {
                 $this->output->writeln('Stop server failed. Please execute `composer dump-autoload -o`');
             }
         }
