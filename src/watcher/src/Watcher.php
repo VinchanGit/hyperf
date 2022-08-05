@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace Hyperf\Watcher;
 
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Di\Annotation\AnnotationReader;
-use Hyperf\Di\ClassLoader;
 use Hyperf\Engine\Channel;
 use Hyperf\Utils\Codec\Json;
 use Hyperf\Utils\Coroutine;
@@ -33,11 +31,7 @@ class Watcher
 
     protected Filesystem $filesystem;
 
-    protected ClassLoader $loader;
-
     protected array $autoload;
-
-    protected AnnotationReader $reader;
 
     protected ConfigInterface $config;
 
@@ -53,7 +47,6 @@ class Watcher
         $this->filesystem = new Filesystem();
         $json = Json::decode($this->filesystem->get(BASE_PATH . '/composer.json'));
         $this->autoload = array_flip($json['autoload']['psr-4'] ?? []);
-        $this->reader = new AnnotationReader();
         $this->config = $container->get(ConfigInterface::class);
         $this->printer = new Standard();
         $this->channel = new Channel(1);

@@ -37,10 +37,9 @@ class ProxyCallVisitor extends NodeVisitorAbstract
     /**
      * Define the proxy handler trait here.
      */
-    private array $proxyTraits
-        = [
-            ProxyTrait::class,
-        ];
+    private array $proxyTraits = [
+        ProxyTrait::class,
+    ];
 
     private bool $shouldRewrite = false;
 
@@ -73,11 +72,7 @@ class ProxyCallVisitor extends NodeVisitorAbstract
     {
         switch ($node) {
             case $node instanceof ClassMethod:
-                if ($this->shouldRewrite($node)) {
-                    $this->shouldRewrite = true;
-                } else {
-                    $this->shouldRewrite = false;
-                }
+                $this->shouldRewrite = $this->shouldRewrite($node);
                 break;
         }
 
@@ -158,9 +153,10 @@ class ProxyCallVisitor extends NodeVisitorAbstract
             new Arg($this->getMagicConst()),
             // __FUNCTION__
             new Arg(new MagicConstFunction()),
-            // self::getParamMap(OriginalClass::class, __FUNCTION, func_get_args())
+            // self::getParamMap(__CLASS__, __FUNCTION__, func_get_args())
+            // self::getParamMap(__TRAIT__, __FUNCTION__, func_get_args())
             new Arg(new StaticCall(new Name('self'), '__getParamsMap', [
-                new Arg(new MagicConstClass()),
+                new Arg($this->getMagicConst()),
                 new Arg(new MagicConstFunction()),
                 new Arg(new FuncCall(new Name('func_get_args'))),
             ])),
@@ -212,9 +208,9 @@ class ProxyCallVisitor extends NodeVisitorAbstract
         };
     }
 
-    private function shouldRewrite(ClassMethod $node)
+    private function shouldRewrite(ClassMethod $node): bool
     {
-        if (in_array($this->visitorMetadata->classLike, [Node\Stmt\Interface_::class])) {
+        if ($this->visitorMetadata->classLike == Node\Stmt\Interface_::class) {
             return false;
         }
 
