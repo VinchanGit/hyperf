@@ -30,8 +30,8 @@ class Parser
      *                              |    +----------- min (0 - 59)
      *                              +------------- sec (0-59)
      * @param null|Carbon|int $startTime
-     * @throws \InvalidArgumentException
      * @return Carbon[]
+     * @throws \InvalidArgumentException
      */
     public function parse(string $crontabString, $startTime = null)
     {
@@ -86,7 +86,7 @@ class Parser
                     continue;
                 }
 
-                if (trim($value) === '' || ! $this->between((int) $value, ($min > $start ? $min : $start), $max)) {
+                if (trim($value) === '' || ! $this->between((int) $value, $min > $start ? $min : $start, $max)) {
                     continue;
                 }
                 $result[] = (int) $value;

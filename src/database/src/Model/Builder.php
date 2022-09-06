@@ -142,7 +142,7 @@ class Builder
             return $this->toBase()->{$method}(...$parameters);
         }
 
-        call([$this->query, $method], $parameters);
+        $this->query->{$method}(...$parameters);
 
         return $this;
     }
@@ -431,8 +431,8 @@ class Builder
      *
      * @param array $columns
      * @param mixed $id
-     * @throws \Hyperf\Database\Model\ModelNotFoundException
      * @return \Hyperf\Database\Model\Collection|\Hyperf\Database\Model\Model|static|static[]
+     * @throws \Hyperf\Database\Model\ModelNotFoundException
      */
     public function findOrFail($id, $columns = ['*'])
     {
@@ -514,8 +514,8 @@ class Builder
      * Execute the query and get the first result or throw an exception.
      *
      * @param array $columns
-     * @throws \Hyperf\Database\Model\ModelNotFoundException
      * @return \Hyperf\Database\Model\Model|static
+     * @throws \Hyperf\Database\Model\ModelNotFoundException
      */
     public function firstOrFail($columns = ['*'])
     {
@@ -977,11 +977,8 @@ class Builder
 
     /**
      * Apply query-time casts to the model instance.
-     *
-     * @param array $casts
-     * @return $this
      */
-    public function withCasts($casts)
+    public function withCasts(array $casts): static
     {
         $this->model->mergeCasts($casts);
 

@@ -179,7 +179,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return $this->{$method}(...$parameters);
         }
 
-        return call([$this->newQuery(), $method], $parameters);
+        return $this->newQuery()->{$method}(...$parameters);
     }
 
     /**
@@ -239,7 +239,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         IgnoreOnTouch::$container = array_values(array_merge(IgnoreOnTouch::$container, $models));
 
         try {
-            call($callback);
+            $callback();
         } finally {
             IgnoreOnTouch::$container = array_values(array_diff(IgnoreOnTouch::$container, $models));
         }
@@ -267,8 +267,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Fill the model with an array of attributes.
      *
-     * @throws \Hyperf\Database\Model\MassAssignmentException
      * @return $this
+     * @throws \Hyperf\Database\Model\MassAssignmentException
      */
     public function fill(array $attributes)
     {
@@ -577,8 +577,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Save the model to the database using transaction.
      *
-     * @throws \Throwable
      * @return bool
+     * @throws \Throwable
      */
     public function saveOrFail(array $options = [])
     {
@@ -622,8 +622,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Delete the model from the database.
      *
-     * @throws \Exception
      * @return null|bool
+     * @throws \Exception
      */
     public function delete()
     {
@@ -807,8 +807,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Convert the model instance to JSON.
      *
      * @param int $options
-     * @throws \Hyperf\Database\Model\JsonEncodingException
      * @return string
+     * @throws \Hyperf\Database\Model\JsonEncodingException
      */
     public function toJson($options = 0)
     {
@@ -1212,11 +1212,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
     /**
      * Remove the table name from a given key.
-     *
-     * @param string $key
-     * @return string
      */
-    protected function removeTableFromKey($key)
+    protected function removeTableFromKey(string $key): string
     {
         return Str::contains($key, '.') ? last(explode('.', $key)) : $key;
     }

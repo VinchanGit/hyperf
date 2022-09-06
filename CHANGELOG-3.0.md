@@ -30,6 +30,8 @@ php vendor/bin/regenerate-models.php $PWD/app/Model
 composer analyse
 ```
 
+- 框架根据 `GRPC` 规范修改了 `GRPC Server` 返回的 `Http status` 固定为为 200， `GRPC Server` 返回对应的 `status code`,更新前如果有使用 `GRPC`,请务必将相关的服务升级到 3.x 版本
+
 ## Dependencies Upgrade
 
 - Upgraded `php-amqplib/php-amqplib` to `^3.1`;
@@ -54,6 +56,12 @@ composer analyse
 - [#4908](https://github.com/hyperf/hyperf/pull/4908) Added `Db::beforeExecuting()` to register a hook which to be run just before a database query is executed.
 - [#4909](https://github.com/hyperf/hyperf/pull/4909) Added `ConsumerMessageInterface::getNums()` to change the number of amqp consumer by dynamically.
 - [#4918](https://github.com/hyperf/hyperf/pull/4918) Added `LoadBalancerInterface::afterRefreshed()` to register a hook which to be run after refresh nodes.
+- [#4992](https://github.com/hyperf/hyperf/pull/4992) Added config `amqp.enable` which used to control amqp consumer whether to start automatically and producer whether to declare automatically.
+- [#4994](https://github.com/hyperf/hyperf/pull/4994) [#5016](https://github.com/hyperf/hyperf/pull/5016) Added component `hyperf/database-pgsql` which you can be used to connect pgsql server.
+- [#5007](https://github.com/hyperf/hyperf/pull/5007) Support for SSL encrypted connection to Redis.
+- [#5046](https://github.com/hyperf/hyperf/pull/5046) Added `Hyperf\Database\Model\Concerns\HasAttributes::getRawOriginal()`.
+- [#5052](https://github.com/hyperf/hyperf/pull/5052) Support parsing IPv6 host.
+- [#5601](https://github.com/hyperf/hyperf/pull/5061) Added config `symfony.event.enable` to control whether to use `SymfonyEventDispatcher`.
 
 ## Optimized
 
@@ -75,6 +83,9 @@ composer analyse
 - [#4949](https://github.com/hyperf/hyperf/pull/4949) Removed useless `call()` from `Coroutine::create()`.
 - [#4961](https://github.com/hyperf/hyperf/pull/4961) Removed proxy mode from `Hyperf\Di\ClassLoader` and Optimized `Composer::getLoader()`.
 - [#4981](https://github.com/hyperf/hyperf/pull/4981) Confirm before proceeding with the action when using `ConfirmableTrait`, such as `migrate` command.
+- [#5017](https://github.com/hyperf/hyperf/pull/5017) Check validity of file descriptor before sending message to it when using `socketio-server`.
+- [#5029](https://github.com/hyperf/hyperf/pull/5029) Removed useless method `call()` from `callable function`.
+- [#5078](https://github.com/hyperf/hyperf/pull/5078) Optimized code about creating exception from another exception.
 
 ## Changed
 
@@ -96,6 +107,9 @@ composer analyse
 - [#4934](https://github.com/hyperf/hyperf/pull/4934) Throw `NoNodesAvailableException` when cannot select any node from load balancer.
 - [#4952](https://github.com/hyperf/hyperf/pull/4952) Don't write pid when the `settings.pid_file` is null when using swow server.
 - [#4979](https://github.com/hyperf/hyperf/pull/4979) Don't support database commands by default, please require `hyperf/devtool` or set them in `autoload/commands`.
+- [#5008](https://github.com/hyperf/hyperf/pull/5008) Removed array type of `Trace Annotation`, because don't support array.
+- [#5036](https://github.com/hyperf/hyperf/pull/5036) Changed grpc server StatsCode and serializeMessage.
+- [#5601](https://github.com/hyperf/hyperf/pull/5061) Don't use `Hyperf\Framework\SymfonyEventDispatcher` by default, if you listen symfony events, you must open `symfony.event.enable`.
 
 ## Swow Supported
 
@@ -107,6 +121,10 @@ composer analyse
 - [#4917](https://github.com/hyperf/hyperf/pull/4917) Support `hyperf/load-balancer`.
 - [#4924](https://github.com/hyperf/hyperf/pull/4924) Support TcpServer for `hyperf/server`.
 - [#4984](https://github.com/hyperf/hyperf/pull/4984) Support `hyperf/retry`.
+- [#4988](https://github.com/hyperf/hyperf/pull/4988) Support `hyperf/pool`.
+- [#4989](https://github.com/hyperf/hyperf/pull/4989) Support `hyperf/crontab`.
+- [#4990](https://github.com/hyperf/hyperf/pull/4990) Support `hyperf/nsq`.
+- [#5070](https://github.com/hyperf/hyperf/pull/5070) Support `hyperf/signal`.
 
 ## Removed
 

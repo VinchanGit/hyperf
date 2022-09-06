@@ -419,8 +419,8 @@ class Connection
      * @param string $address server url string
      * @param float $timeout number of seconds until the connect() system call should timeout
      *
-     * @throws \Exception exception raised if connection fails
      * @return resource
+     * @throws \Exception exception raised if connection fails
      */
     private function getStream(string $address, float $timeout)
     {
@@ -474,7 +474,7 @@ class Connection
 
             $len = ($len - $written);
             if ($len > 0) {
-                $msg = substr($msg, (0 - $len));
+                $msg = substr($msg, 0 - $len);
             } else {
                 break;
             }

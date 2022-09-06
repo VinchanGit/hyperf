@@ -54,7 +54,7 @@ class RedisTest extends TestCase
         $this->assertSame('timeout', $timeout->getName());
         $this->assertSame('retry_interval', $retryInterval->getName());
 
-        $this->assertTrue($redis->connect('127.0.0.1', 6379, 0.0));
+        $this->assertTrue($redis->connect('127.0.0.1', 6379, 0.0, null, 0, 0));
     }
 
     public function testRedisSelect()
@@ -70,9 +70,11 @@ class RedisTest extends TestCase
 
         $this->assertSame(2, $redis->getDatabase());
 
-        $res = parallel([function () use ($redis) {
-            return $redis->get('xxxx');
-        }]);
+        $res = parallel([
+            function () use ($redis) {
+                return $redis->get('xxxx');
+            },
+        ]);
 
         $this->assertSame('db:0 name:get argument:xxxx', $res[0]);
     }

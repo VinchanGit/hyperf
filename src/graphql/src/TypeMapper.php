@@ -28,6 +28,7 @@ use TheCodingMachine\GraphQLite\Mappers\RecursiveTypeMapperInterface;
 use TheCodingMachine\GraphQLite\Mappers\TypeMapperInterface;
 use TheCodingMachine\GraphQLite\NamingStrategyInterface;
 use TheCodingMachine\GraphQLite\Types\MutableObjectType;
+
 use function array_keys;
 use function filemtime;
 
@@ -258,9 +259,9 @@ class TypeMapper implements TypeMapperInterface
      * Returns a GraphQL type by name (can be either an input or output type).
      *
      * @param string $typeName The name of the GraphQL type
+     * @return \GraphQL\Type\Definition\Type&(InputType|OutputType)
      * @throws CannotMapTypeExceptionInterface
      * @throws \ReflectionException
-     * @return \GraphQL\Type\Definition\Type&(InputType|OutputType)
      */
     public function mapNameToType(string $typeName, RecursiveTypeMapperInterface $recursiveTypeMapper): \GraphQL\Type\Definition\Type
     {

@@ -40,8 +40,6 @@ class View implements ArrayAccess, Htmlable, ViewInterface, \Stringable
     /**
      * Create a new view instance.
      *
-     * @param string $view
-     * @param string $path
      * @param mixed $data
      */
     /**
@@ -100,8 +98,8 @@ class View implements ArrayAccess, Htmlable, ViewInterface, \Stringable
      *
      * @param string $method
      * @param array $parameters
-     * @throws BadMethodCallException
      * @return View
+     * @throws BadMethodCallException
      */
     public function __call($method, $parameters)
     {
@@ -176,8 +174,8 @@ class View implements ArrayAccess, Htmlable, ViewInterface, \Stringable
     /**
      * Get the sections of the rendered view.
      *
-     * @throws Throwable
      * @return array
+     * @throws Throwable
      */
     public function renderSections()
     {
