@@ -13,6 +13,7 @@ namespace HyperfTest\ExceptionHandler;
 
 use Hyperf\ExceptionHandler\Formatter\DefaultFormatter;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
  * @internal
@@ -26,8 +27,7 @@ class FormatterTest extends TestCase
 
         $message = uniqid();
         $code = rand(1000, 9999);
-        $exception = new \RuntimeException($message, $code);
-        $expected = str_replace($message, $message . "({$code})", (string) $exception);
-        $this->assertSame($expected, $formatter->format($exception));
+        $exception = new RuntimeException($message, $code);
+        $this->assertSame((string) $exception, $formatter->format($exception));
     }
 }

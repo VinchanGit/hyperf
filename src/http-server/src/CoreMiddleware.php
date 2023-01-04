@@ -15,6 +15,7 @@ use Closure;
 use FastRoute\Dispatcher;
 use Hyperf\Context\Context;
 use Hyperf\Contract\Arrayable;
+use Hyperf\Contract\Jsonable;
 use Hyperf\Contract\NormalizerInterface;
 use Hyperf\Di\ClosureDefinitionCollectorInterface;
 use Hyperf\Di\MethodDefinitionCollectorInterface;
@@ -28,11 +29,12 @@ use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\HttpServer\Router\DispatcherFactory;
 use Hyperf\Server\Exception\ServerException;
 use Hyperf\Utils\Codec\Json;
-use Hyperf\Utils\Contracts\Jsonable;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 /**
  * Core middleware of Hyperf, main responsibility is used to handle route info
@@ -164,12 +166,15 @@ class CoreMiddleware implements CoreMiddlewareInterface
             if (str_contains($handler, '@')) {
                 return explode('@', $handler);
             }
-            return explode('::', $handler);
+            if (str_contains($handler, '::')) {
+                return explode('::', $handler);
+            }
+            return [$handler, '__invoke'];
         }
         if (is_array($handler) && isset($handler[0], $handler[1])) {
             return $handler;
         }
-        throw new \RuntimeException('Handler not exist.');
+        throw new RuntimeException('Handler not exist.');
     }
 
     /**
@@ -247,7 +252,7 @@ class CoreMiddleware implements CoreMiddlewareInterface
                 } elseif ($definition->allowsNull()) {
                     $injections[] = null;
                 } else {
-                    throw new \InvalidArgumentException("Parameter '{$definition->getMeta('name')}' "
+                    throw new InvalidArgumentException("Parameter '{$definition->getMeta('name')}' "
                         . "of {$callableName} should not be null");
                 }
             } else {

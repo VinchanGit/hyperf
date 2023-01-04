@@ -13,6 +13,7 @@ namespace HyperfTest\HttpServer;
 
 use Hyperf\Context\Context;
 use Hyperf\Contract\Arrayable;
+use Hyperf\Contract\Xmlable;
 use Hyperf\HttpMessage\Cookie\Cookie;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpMessage\Uri\Uri;
@@ -21,11 +22,11 @@ use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\HttpServer\Response;
 use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Contracts\Xmlable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use ReflectionClass;
 use Swoole\Http\Response as SwooleResponse;
 
 /**
@@ -83,7 +84,7 @@ class ResponseTest extends TestCase
         Context::set(PsrResponseInterface::class, $psrResponse);
 
         $response = new Response();
-        $reflectionClass = new \ReflectionClass(Response::class);
+        $reflectionClass = new ReflectionClass(Response::class);
         $reflectionMethod = $reflectionClass->getMethod('toXml');
         $reflectionMethod->setAccessible(true);
 

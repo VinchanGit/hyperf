@@ -12,10 +12,11 @@ declare(strict_types=1);
 namespace Hyperf\ViewEngine;
 
 use Countable;
+use Hyperf\Contract\MessageBag;
 use Hyperf\Utils\Arr;
-use Hyperf\Utils\Contracts\MessageBag;
+use Stringable;
 
-class ViewErrorBag implements Countable, \Stringable
+class ViewErrorBag implements Countable, Stringable
 {
     /**
      * The array of the view error bags.
