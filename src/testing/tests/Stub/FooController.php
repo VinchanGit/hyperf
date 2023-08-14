@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace HyperfTest\Testing\Stub;
 
 use Hyperf\Context\Context;
-use Hyperf\Utils\Coroutine;
+use Hyperf\Coroutine\Coroutine;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
@@ -31,6 +31,13 @@ class FooController
     public function id()
     {
         return ['code' => 0, 'data' => Coroutine::id()];
+    }
+
+    public function context()
+    {
+        return [
+            'request_id' => Context::getOrSet('request_id', uniqid()),
+        ];
     }
 
     public function request()

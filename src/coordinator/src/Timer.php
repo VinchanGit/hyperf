@@ -15,6 +15,8 @@ use Closure;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Throwable;
 
+use function Hyperf\Coroutine\go;
+
 class Timer
 {
     public const STOP = 'stop';
@@ -22,6 +24,10 @@ class Timer
     private array $closures = [];
 
     private int $id = 0;
+
+    private static int $count = 0;
+
+    private static int $round = 0;
 
     public function __construct(private ?StdoutLoggerInterface $logger = null)
     {
@@ -33,12 +39,18 @@ class Timer
         $this->closures[$id] = true;
         go(function () use ($timeout, $closure, $identifier, $id) {
             try {
-                $isClosing = CoordinatorManager::until($identifier)->yield($timeout);
+                ++Timer::$count;
+                $isClosing = match (true) {
+                    $timeout > 0 => CoordinatorManager::until($identifier)->yield($timeout), // Run after $timeout seconds.
+                    $timeout == 0 => CoordinatorManager::until($identifier)->isClosing(), // Run immediately.
+                    default => CoordinatorManager::until($identifier)->yield(), // Run until $identifier resume.
+                };
                 if (isset($this->closures[$id])) {
                     $closure($isClosing);
                 }
             } finally {
                 unset($this->closures[$id]);
+                --Timer::$count;
             }
         });
         return $id;
@@ -50,26 +62,41 @@ class Timer
         $this->closures[$id] = true;
         go(function () use ($timeout, $closure, $identifier, $id) {
             try {
+                $round = 0;
+                ++Timer::$count;
                 while (true) {
-                    $isClosing = CoordinatorManager::until($identifier)->yield($timeout);
+                    $isClosing = CoordinatorManager::until($identifier)->yield(max($timeout, 0.000001));
                     if (! isset($this->closures[$id])) {
                         break;
                     }
 
+                    $result = null;
+
                     try {
                         $result = $closure($isClosing);
-                        if ($result === self::STOP || $isClosing) {
-                            break;
-                        }
                     } catch (Throwable $exception) {
                         $this->logger?->error((string) $exception);
                     }
+
+                    if ($result === self::STOP || $isClosing) {
+                        break;
+                    }
+
+                    ++$round;
+                    ++Timer::$round;
                 }
             } finally {
                 unset($this->closures[$id]);
+                Timer::$round -= $round;
+                --Timer::$count;
             }
         });
         return $id;
+    }
+
+    public function until(Closure $closure, string $identifier = Constants::WORKER_EXIT): int
+    {
+        return $this->after(-1, $closure, $identifier);
     }
 
     public function clear(int $id): void
@@ -80,5 +107,13 @@ class Timer
     public function clearAll(): void
     {
         $this->closures = [];
+    }
+
+    public static function stats(): array
+    {
+        return [
+            'num' => Timer::$count,
+            'round' => Timer::$round,
+        ];
     }
 }

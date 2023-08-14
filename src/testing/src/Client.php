@@ -11,6 +11,8 @@ declare(strict_types=1);
  */
 namespace Hyperf\Testing;
 
+use Hyperf\Codec\Packer\JsonPacker;
+use Hyperf\Collection\Arr;
 use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\PackerInterface;
@@ -24,14 +26,15 @@ use Hyperf\HttpServer\MiddlewareManager;
 use Hyperf\HttpServer\ResponseEmitter;
 use Hyperf\HttpServer\Router\Dispatched;
 use Hyperf\HttpServer\Server;
+use Hyperf\Support\Filesystem\Filesystem;
 use Hyperf\Testing\HttpMessage\Upload\UploadedFile;
-use Hyperf\Utils\Arr;
-use Hyperf\Utils\Filesystem\Filesystem;
-use Hyperf\Utils\Packer\JsonPacker;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+
+use function Hyperf\Collection\data_get;
+use function Hyperf\Coroutine\wait;
 
 class Client extends Server
 {
@@ -86,6 +89,16 @@ class Client extends Server
         return $this->packer->unpack((string) $response->getBody());
     }
 
+    public function patch(string $uri, array $data = [], array $headers = [])
+    {
+        $response = $this->request('PATCH', $uri, [
+            'headers' => $headers,
+            'form_params' => $data,
+        ]);
+
+        return $this->packer->unpack((string) $response->getBody());
+    }
+
     public function delete(string $uri, array $data = [], array $headers = [])
     {
         $response = $this->request('DELETE', $uri, [
@@ -132,16 +145,18 @@ class Client extends Server
         return $this->packer->unpack((string) $response->getBody());
     }
 
-    public function request(string $method, string $path, array $options = [])
+    public function request(string $method, string $path, array $options = [], ?callable $callable = null)
     {
-        return wait(function () use ($method, $path, $options) {
+        return wait(function () use ($method, $path, $options, $callable) {
+            $callable && $callable();
             return $this->execute($this->initRequest($method, $path, $options));
         }, $this->waitTimeout);
     }
 
-    public function sendRequest(ServerRequestInterface $psr7Request): ResponseInterface
+    public function sendRequest(ServerRequestInterface $psr7Request, ?callable $callable = null): ResponseInterface
     {
-        return wait(function () use ($psr7Request) {
+        return wait(function () use ($psr7Request, $callable) {
+            $callable && $callable();
             return $this->execute($psr7Request);
         }, $this->waitTimeout);
     }

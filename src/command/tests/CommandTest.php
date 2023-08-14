@@ -11,8 +11,8 @@ declare(strict_types=1);
  */
 namespace HyperfTest\Command;
 
-use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Reflection\ClassInvoker;
+use Hyperf\Context\ApplicationContext;
+use Hyperf\Support\Reflection\ClassInvoker;
 use HyperfTest\Command\Command\DefaultSwooleFlagsCommand;
 use HyperfTest\Command\Command\FooCommand;
 use HyperfTest\Command\Command\FooExceptionCommand;
@@ -61,7 +61,7 @@ class CommandTest extends TestCase
         $output->shouldReceive('writeln')->withAnyArgs()->andReturnNull();
 
         $exitCode = $command->execute($input, $output);
-        $this->assertSame(99, $exitCode);
+        $this->assertSame(1, $exitCode);
 
         /** @var FooExitCommand $command */
         $command = new ClassInvoker(new FooExitCommand());

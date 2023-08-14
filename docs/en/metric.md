@@ -93,7 +93,7 @@ When using the crawl mode (Prometheus official recommendation), you need to set:
 
 And configure the crawling address `scrape_host`, the crawling port `scrape_port`, and the crawling path `scrape_path`. Prometheus can pull all metrics in the form of HTTP access under the corresponding configuration.
 
-> Note: In crawl mode, standalone process must be enabled, ie use_standalone_process = true.
+> Note: In crawl mode, standalone process must be enabled, ie `use_standalone_process = true`.
 
 When using push mode, you need to set:
 
@@ -393,7 +393,7 @@ Add Prometheus routes in config/routes.php.
 use Hyperf\HttpServer\Router\Router;
 
 Router::get('/metrics', function(){
-    $registry = Hyperf\Utils\ApplicationContext::getContainer()->get(Prometheus\CollectorRegistry::class);
+    $registry = Hyperf\Context\ApplicationContext::getContainer()->get(Prometheus\CollectorRegistry::class);
     $renderer = new Prometheus\RenderTextFormat();
     return $renderer->render($registry->getMetricFamilySamples());
 });

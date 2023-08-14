@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Hyperf\SocketIOServer;
 
 use Closure;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\OnCloseInterface;
 use Hyperf\Contract\OnMessageInterface;
 use Hyperf\Contract\OnOpenInterface;
@@ -26,7 +27,6 @@ use Hyperf\SocketIOServer\Parser\Engine;
 use Hyperf\SocketIOServer\Parser\Packet;
 use Hyperf\SocketIOServer\Room\EphemeralInterface;
 use Hyperf\SocketIOServer\SidProvider\SidProviderInterface;
-use Hyperf\Utils\ApplicationContext;
 use Hyperf\WebSocketServer\Constant\Opcode;
 use Hyperf\WebSocketServer\Sender;
 use Swoole\Atomic;
@@ -35,6 +35,8 @@ use Swoole\Http\Response;
 use Swoole\Timer;
 use Swoole\WebSocket\Server;
 use Throwable;
+
+use function Hyperf\Support\make;
 
 /**
  *  packet types
@@ -135,6 +137,11 @@ class SocketIO implements OnMessageInterface, OnOpenInterface, OnCloseInterface
         }
         if ($frame->data[0] !== Engine::MESSAGE) {
             $this->stdoutLogger->error("EngineIO event type {$frame->data[0]} not supported");
+            return;
+        }
+        // Check that the namespace is correct
+        if (! str_contains($frame->data, ',') && ! str_contains($frame->data, '?')) {
+            $this->stdoutLogger->error("The data format is incorrect: {$frame->data}");
             return;
         }
         $packet = $this->decoder->decode(substr($frame->data, 1));

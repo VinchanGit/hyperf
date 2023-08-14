@@ -27,7 +27,7 @@ php bin/hyperf.php gen:command FooCommand
 
 ### 定义命令
 
-定义该命令类所对应的命令有两种形式，一种是通过 `$name` 属性定义，另一种是通过构造函数传参来定义，我们通过代码示例来演示一下，假设我们希望定义该命令类的命令为 `foo:hello`：
+定义该命令类所对应的命令有三种形式，第一种是通过 `$name` 属性定义，第二种是通过构造函数传参来定义，最后一种是通过注解来定义，我们通过代码示例来演示一下，假设我们希望定义该命令类的命令为 `foo:hello`：
 
 #### `$name` 属性定义：
 
@@ -47,7 +47,7 @@ class FooCommand extends HyperfCommand
     /**
      * 执行的命令行
      */
-    protected string $name = 'foo:hello';
+    protected ?string $name = 'foo:hello';
 }
 ```
 
@@ -73,6 +73,25 @@ class FooCommand extends HyperfCommand
 }
 ```
 
+#### 注解定义：
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Command;
+
+use Hyperf\Command\Command as HyperfCommand;
+use Hyperf\Command\Annotation\Command;
+
+#[Command(name: "foo:hello")]
+class FooCommand extends HyperfCommand
+{
+
+}
+```
+
 ### 定义命令类逻辑
 
 命令类实际运行的逻辑是取决于 `handle` 方法内的代码，也就意味着 `handle` 方法就是命令的入口。
@@ -93,7 +112,7 @@ class FooCommand extends HyperfCommand
     /**
      * 执行的命令行
      */
-    protected string $name = 'foo:hello';
+    protected ?string $name = 'foo:hello';
 
     public function handle()
     {
@@ -128,7 +147,7 @@ class FooCommand extends HyperfCommand
     /**
      * 执行的命令行
      */
-    protected string $name = 'foo:hello';
+    protected ?string $name = 'foo:hello';
 
     public function handle()
     {
@@ -463,7 +482,7 @@ $input = new ArrayInput($params);
 $output = new NullOutput();
 
 /** @var \Psr\Container\ContainerInterface $container */
-$container = \Hyperf\Utils\ApplicationContext::getContainer();
+$container = \Hyperf\Context\ApplicationContext::getContainer();
 
 /** @var \Symfony\Component\Console\Application $application */
 $application = $container->get(\Hyperf\Contract\ApplicationInterface::class);

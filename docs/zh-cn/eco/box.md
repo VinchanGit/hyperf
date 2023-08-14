@@ -76,7 +76,7 @@ box config set kernel swoole
 - `box config get-php-version <version>`获取 box 的当前设置的 PHP 版本
 - `box reverse-proxy -u <upsteamHost:upstreamPort>` 启动一个反向代理 HTTP 服务器，用于将 HTTP 请求转发到指定的多个上游服务器
 - `box php <argument>` 通过当前 box 的 PHP 版本运行任何 PHP 命令
-- `box composer <argument>`通过当前 box 的 PHP 版本运行任何 Composer 命令，composer bin 的版本取决于最后执行的`get composer`命令
+- `box composer <argument>`通过当前 box 的 PHP 版本运行任何 Composer 命令，composer bin 的版本取决于最后执行的 `get composer` 命令
 - `box php-cs-fixer <argument>` 通过当前 box 的 PHP 版本运行任何 `php-cs-fixer` 命令，composer bin 的版本取决于最后执行的 `get php-cs-fixer` 命令
 - `box cs-fix <argument>` 通过当前 box 的 PHP 版本运行 `php-cs-fixer fix` 命令，composer bin 的版本取决于最后执行的 `get php-cs-fixer` 命令
 - `box phpstan <argument>` 通过当前 box 的 PHP 版本运行任何 `phpstan` 命令，composer bin 的版本取决于最后执行的 `get phpstan` 命令，此命令仅在 box v0.3.0 及以上的版本中可用
@@ -85,4 +85,4 @@ box config set kernel swoole
 
 ### 关于 Swow-Skeleton
 
-希望体验 Box 完整功能的朋友，需要通过 Swow Kernel 来运行，因此您需要基于 [hyperf/swow-skeleton](https://github.com/hyperf/swow-skeleton) 来运行您的项目，可通过 `box composer create-project hyperf/swow-skeleton:dev-master` 命令来创建一个基于 Hyperf 3.0 RC 版的 Swow 骨架项目。
+希望体验 Box 完整功能的朋友，需要通过 Swow Kernel 来运行，因此您需要基于 [hyperf/swow-skeleton](https://github.com/hyperf/swow-skeleton) 来运行您的项目，可通过 `box composer create-project hyperf/swow-skeleton` 命令来创建一个基于 Hyperf 3.0 版的 Swow 骨架项目。

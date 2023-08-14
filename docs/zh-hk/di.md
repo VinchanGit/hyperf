@@ -243,8 +243,8 @@ use Psr\Container\ContainerInterface;
 
 class UserServiceFactory
 {
-    // 實現一個 __invoke() 方法來完成對象的生產，方法參數會自動注入一個當前的容器實例
-    public function __invoke(ContainerInterface $container)
+    // 實現一個 __invoke() 方法來完成對象的生產，方法參數會自動注入一個當前的容器實例和一個參數數組
+    public function __invoke(ContainerInterface $container, array $parameters = [])
     {
         $config = $container->get(ConfigInterface::class);
         // 我們假設對應的配置的 key 為 cache.enable
@@ -306,7 +306,7 @@ Hyperf 的長生命週期依賴注入在項目啓動時完成。這意味着長�
 
 另一個方案是使用 PHP 中常用的惰性代理模式，注入一個代理對象，在使用時再實例化目標對象。Hyperf DI 組件設計了懶加載注入功能。
 
-添加 `config/autoload/lazy_loader.php` 文件並綁定懶加載關係：
+添加 `config/lazy_loader.php` 文件並綁定懶加載關係：
 
 ```php
 <?php
@@ -405,10 +405,10 @@ class IndexController
 ```   
 
 在某些更極端動態的情況下，或者非 `容器(Container)` 的管理作用之下時，想要獲取到 `容器(Container)`
-對象還可以通過 `\Hyperf\Utils\ApplicationContext::getContaienr()` 方法來獲得 `容器(Container)` 對象。
+對象還可以通過 `\Hyperf\Context\ApplicationContext::getContaienr()` 方法來獲得 `容器(Container)` 對象。
 
 ```php
-$container = \Hyperf\Utils\ApplicationContext::getContainer();
+$container = \Hyperf\Context\ApplicationContext::getContainer();
 ```
 
 ## 掃描適配器

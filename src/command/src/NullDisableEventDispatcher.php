@@ -11,15 +11,10 @@ declare(strict_types=1);
  */
 namespace Hyperf\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-
+/**
+ * @deprecated since 3.0.27, remove in 3.1.0, use \Hyperf\Command\Concerns\NullDisableEventDispatcher instead.
+ */
 trait NullDisableEventDispatcher
 {
-    public function addDisableDispatcherOption(): void
-    {
-    }
-
-    public function disableDispatcher(InputInterface $input)
-    {
-    }
+    use Concerns\NullDisableEventDispatcher;
 }
