@@ -17,6 +17,7 @@ use Hyperf\Contract\ValidatorInterface;
 use Hyperf\HttpServer\Request;
 use Hyperf\Validation\Contract\ValidatesWhenResolved;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface as ValidationFactory;
+use Hyperf\Validation\CustomCollector;
 use Hyperf\Validation\UnauthorizedException;
 use Hyperf\Validation\ValidatesWhenResolvedTrait;
 use Hyperf\Validation\ValidationException;
@@ -43,6 +44,8 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * @var array
      */
     protected $dontFlash = ['password', 'password_confirmation'];
+
+    protected CustomCollector $customerRulesCollector;
 
     public function __construct(protected ContainerInterface $container)
     {
@@ -91,7 +94,7 @@ class FormRequest extends Request implements ValidatesWhenResolved
      */
     public function attributes(): array
     {
-        return [];
+        return $this->customerRulesCollector->getAttributes();
     }
 
     /**
@@ -198,11 +201,24 @@ class FormRequest extends Request implements ValidatesWhenResolved
      */
     protected function getRules(): array
     {
+        $this->initAnnotationRules();
+
         $rules = call_user_func_array([$this, 'rules'], []);
+        $annotationRules = $this->customerRulesCollector->getRules();
+        $rules = array_merge($rules, $annotationRules);
         $scene = $this->getScene();
         if ($scene && isset($this->scenes[$scene]) && is_array($this->scenes[$scene])) {
             return Arr::only($rules, $this->scenes[$scene]);
         }
         return $rules;
+    }
+
+    protected function initAnnotationRules(): void
+    {
+        /** @var CustomCollector $customerCollector */
+        $customerCollector = $this->container->get(CustomCollector::class);
+        $this->customerRulesCollector = $customerCollector->handleAnnotationRules();
+
+        $this->scenes = array_merge($this->scenes, $this->customerRulesCollector->getScenes());
     }
 }

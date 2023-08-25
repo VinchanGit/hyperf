@@ -19,6 +19,7 @@ use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Translation\ArrayLoader;
 use Hyperf\Translation\Translator;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
+use Hyperf\Validation\CustomCollector;
 use Hyperf\Validation\ValidationException;
 use Hyperf\Validation\ValidatorFactory;
 use HyperfTest\Validation\Cases\Stub\BarSceneRequest;
@@ -59,7 +60,10 @@ class FormRequestTest extends TestCase
         $psrRequest->shouldReceive('getQueryParams')->andReturn([]);
 
         Context::set(ServerRequestInterface::class, $psrRequest);
-        $request = new DemoRequest(Mockery::mock(ContainerInterface::class));
+        $container = Mockery::mock(ContainerInterface::class);
+        $container->shouldReceive('get')->with(CustomCollector::class)->andReturn(new CustomCollector());
+
+        $request = new DemoRequest($container);
 
         $this->assertEquals(['id' => 1, 'file' => $file], $request->getValidationData());
     }
@@ -77,7 +81,9 @@ class FormRequestTest extends TestCase
         $psrRequest->shouldReceive('getQueryParams')->andReturn([]);
 
         Context::set(ServerRequestInterface::class, $psrRequest);
-        $request = new DemoRequest(Mockery::mock(ContainerInterface::class));
+        $container = Mockery::mock(ContainerInterface::class);
+        $container->shouldReceive('get')->with(CustomCollector::class)->andReturn(new CustomCollector());
+        $request = new DemoRequest($container);
 
         $this->assertEquals(['file' => ['Invalid File.', $file]], $request->getValidationData());
     }
@@ -96,6 +102,7 @@ class FormRequestTest extends TestCase
         $container = Mockery::mock(ContainerInterface::class);
         $translator = new Translator(new ArrayLoader(), 'en');
         $container->shouldReceive('get')->with(ValidatorFactoryInterface::class)->andReturn(new ValidatorFactory($translator));
+        $container->shouldReceive('get')->with(CustomCollector::class)->andReturn(new CustomCollector());
 
         $request = new BarSceneRequest($container);
         $res = $request->scene('required')->validated();
@@ -127,6 +134,7 @@ class FormRequestTest extends TestCase
         ApplicationContext::setContainer($container);
         $translator = new Translator(new ArrayLoader(), 'en');
         $container->shouldReceive('get')->with(ValidatorFactoryInterface::class)->andReturn(new ValidatorFactory($translator));
+        $container->shouldReceive('get')->with(CustomCollector::class)->andReturn(new CustomCollector());
 
         $request = new FooSceneRequest($container);
         $res = $request->scene('info')->validated();
